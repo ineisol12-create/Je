@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -221,7 +221,7 @@
     .album-cover-text {
       font-family: 'Great Vibes', cursive;
       color: #ffffff;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       text-shadow: 0 2px 4px rgba(0,0,0,0.6);
     }
 
@@ -351,7 +351,7 @@
     
     <!-- Top Left Subtitle -->
     <div class="top-text">
-      Estoy segura que ambos pensamos en el otro al escuchar esta canción...
+      I'm sure we both think of each other when listening to this song...
     </div>
 
     <!-- Main Title -->
@@ -378,9 +378,9 @@
     <div class="dot" style="bottom: 120px; right: 60px; width: 3px; height: 3px;"></div>
 
     <!-- Interactive Vinyl / CD Player -->
-    <div class="player-section" id="player" onclick="togglePlay()">
+    <div class="player-section" id="player" onclick="handlePlayClick()">
       <div class="album-cover">
-        <div class="album-cover-text">solo por vos</div>
+        <div class="album-cover-text">only for you</div>
       </div>
       <div class="cd-disc">
         <div class="cd-center"></div>
@@ -389,18 +389,19 @@
 
     <!-- Bottom Text Section -->
     <div class="bottom-content">
-      <div class="subtitle-main">SOLO POR</div>
-      <div class="subtitle-script">Vos, <span>BABY.</span></div>
+      <div class="subtitle-main">ONLY FOR</div>
+      <div class="subtitle-script">You, <span>BABY.</span></div>
       
       <p class="poem-text">
-        Siempre fuiste un punto aparte entre tanta gente, yo siempre tan ignorante, pero transparente, buscando desayunarte como pan caliente convirtiendo tus instantes en un "para siempre"
+        You were always a class apart among so many people, I was always so unaware yet transparent, longing to start my day with you like warm bread, turning your everyday moments into "forever".
       </p>
     </div>
 
   </div>
 
-  <!-- Dynamic Audio Element -->
+  <!-- Audio Element -->
   <audio id="audio" loop></audio>
+  <input type="file" id="file-picker" accept="audio/*" style="display: none;" onchange="loadChosenFile(event)">
 
   <script>
     // Password Logic
@@ -415,7 +416,6 @@
       }
     }
 
-    // Enable 'Enter' key on password input
     document.getElementById('pwd-input').addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
         checkPassword();
@@ -425,36 +425,48 @@
     // Audio & Vinyl Controller Logic
     const player = document.getElementById('player');
     const audio = document.getElementById('audio');
+    const filePicker = document.getElementById('file-picker');
 
-    // Automatically find any uploaded audio file in the folder
-    async function loadAnyAudioFile() {
+    // Auto-search repository audio files
+    async function initAudio() {
       try {
-        const response = await fetch('./');
-        const text = await response.text();
-        
-        // Match audio file extensions from folder list
-        const audioMatch = text.match(/href="([^"]+\.(mp3|wav|m4a|ogg|aac|flac))"/i);
-        if (audioMatch && audioMatch[1]) {
-          audio.src = audioMatch[1];
+        const res = await fetch('./');
+        const text = await res.text();
+        const match = text.match(/href="([^"]+\.(mp3|wav|m4a|ogg|aac|flac))"/i);
+        if (match && match[1]) {
+          audio.src = match[1];
         }
-      } catch (err) {
-        console.log("Auto-detect fallback active");
+      } catch (e) {
+        console.log("Auto lookup waiting for user input");
       }
     }
 
-    loadAnyAudioFile();
+    initAudio();
+
+    function handlePlayClick() {
+      if (!audio.src || audio.src === window.location.href) {
+        // If no file loaded yet, prompt user to select their audio file
+        filePicker.click();
+      } else {
+        togglePlay();
+      }
+    }
+
+    function loadChosenFile(event) {
+      const file = event.target.files[0];
+      if (file) {
+        audio.src = URL.createObjectURL(file);
+        togglePlay();
+      }
+    }
 
     function togglePlay() {
-      // Fallback if fetch failed: try standard media paths automatically
-      if (!audio.src) {
-        audio.src = "./";
-      }
-
       if (audio.paused) {
-        audio.play().catch(() => {
-          alert("Please upload your music file to GitHub alongside index.html!");
+        audio.play().then(() => {
+          player.classList.add('playing');
+        }).catch(() => {
+          filePicker.click();
         });
-        player.classList.add('playing');
       } else {
         audio.pause();
         player.classList.remove('playing');
@@ -462,5 +474,5 @@
     }
   </script>
 </body>
-  </html>
-  
+</html>
+

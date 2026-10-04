@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -260,7 +261,7 @@
 
     /* CD Playing Class (Slide out + Spin) */
     .player-section.playing .cd-disc {
-      transform: translateX(85px);
+      transform: translateX(85px) !important;
       animation: spin 3s linear infinite;
       animation-delay: 0.6s;
     }
@@ -311,7 +312,6 @@
       font-weight: 400;
     }
 
-    /* Responsive scaling for mobile screens */
     @media (max-width: 600px) {
       .postcard {
         aspect-ratio: auto;
@@ -324,7 +324,7 @@
         top: 80px;
       }
       .player-section.playing .cd-disc {
-        transform: translateX(50px);
+        transform: translateX(50px) !important;
       }
       @keyframes spin {
         from { transform: translateX(50px) rotate(0deg); }
@@ -341,7 +341,7 @@
       <h2>Enter Password</h2>
       <p>Please enter the secret password to open your webpage.</p>
       <input type="password" id="pwd-input" placeholder="Password..." />
-      <button onclick="checkPassword()">Unlock</button>
+      <button id="pwd-btn">Unlock</button>
       <div id="error-msg" class="error-msg">Incorrect password! Try again.</div>
     </div>
   </div>
@@ -349,18 +349,15 @@
   <!-- MAIN WEBSITE CONTENT -->
   <div class="postcard">
     
-    <!-- Top Left Subtitle -->
     <div class="top-text">
       I'm sure we both think of each other when listening to this song...
     </div>
 
-    <!-- Main Title -->
     <div class="title-container">
       <div class="title-our">our</div>
       <div class="title-song">Song...</div>
     </div>
 
-    <!-- Star & Accent Visual Details -->
     <svg class="star-top-right" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M50 0L58 35L95 35L65 57L76 92L50 70L24 92L35 57L5 35L42 35L50 0Z" fill="#3b506b" opacity="0.6"/>
       <line x1="10" y1="20" x2="30" y2="20" stroke="#3b506b" stroke-width="2"/>
@@ -371,14 +368,13 @@
       <path d="M50 0L58 35L95 35L65 57L76 92L50 70L24 92L35 57L5 35L42 35L50 0Z" fill="#3b506b" opacity="0.4"/>
     </svg>
 
-    <!-- Decorative Scatter Dots -->
     <div class="dot" style="top: 60px; right: 30px; width: 3px; height: 3px;"></div>
     <div class="dot" style="top: 120px; right: 140px; width: 2px; height: 2px;"></div>
     <div class="dot" style="top: 280px; left: 40px; width: 4px; height: 4px;"></div>
     <div class="dot" style="bottom: 120px; right: 60px; width: 3px; height: 3px;"></div>
 
     <!-- Interactive Vinyl / CD Player -->
-    <div class="player-section" id="player" onclick="handlePlayClick()">
+    <div class="player-section" id="player">
       <div class="album-cover">
         <div class="album-cover-text">only for you</div>
       </div>
@@ -387,7 +383,6 @@
       </div>
     </div>
 
-    <!-- Bottom Text Section -->
     <div class="bottom-content">
       <div class="subtitle-main">ONLY FOR</div>
       <div class="subtitle-script">You, <span>BABY.</span></div>
@@ -399,50 +394,45 @@
 
   </div>
 
-  <!-- Audio Element -->
   <audio id="audio" preload="auto" loop>
     <source src="audio.mp3" type="audio/mpeg">
-    <source src="audio.mp3" type="audio/mp3">
   </audio>
 
   <script>
-    // Password Logic
-    function checkPassword() {
-      const input = document.getElementById('pwd-input').value;
+    document.addEventListener("DOMContentLoaded", function() {
+      const pwdInput = document.getElementById('pwd-input');
+      const pwdBtn = document.getElementById('pwd-btn');
+      const pwdScreen = document.getElementById('password-screen');
       const errorMsg = document.getElementById('error-msg');
-      
-      if (input.trim().toLowerCase() === 'love') {
-        document.getElementById('password-screen').classList.add('hidden');
-        
-        // Unlock browser audio permissions upon unlocking
-        const audio = document.getElementById('audio');
-        audio.load();
-      } else {
-        errorMsg.style.display = 'block';
-      }
-    }
+      const player = document.getElementById('player');
+      const audio = document.getElementById('audio');
 
-    document.getElementById('pwd-input').addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') {
-        checkPassword();
+      function unlock() {
+        if (pwdInput.value.trim().toLowerCase() === 'love') {
+          pwdScreen.classList.add('hidden');
+          audio.load();
+        } else {
+          errorMsg.style.display = 'block';
+        }
       }
+
+      pwdBtn.addEventListener('click', unlock);
+      pwdInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') unlock();
+      });
+
+      player.addEventListener('click', function() {
+        if (player.classList.contains('playing')) {
+          player.classList.remove('playing');
+          audio.pause();
+        } else {
+          player.classList.add('playing');
+          audio.play().catch(function(err) {
+            console.log("Audio play blocked or file not found:", err);
+          });
+        }
+      });
     });
-
-    // Audio & Vinyl Controller Logic
-    const player = document.getElementById('player');
-    const audio = document.getElementById('audio');
-
-    function handlePlayClick() {
-      if (audio.paused) {
-        player.classList.add('playing');
-        audio.play().catch(function(error) {
-          console.log("Audio playback failed:", error);
-        });
-      } else {
-        audio.pause();
-        player.classList.remove('playing');
-      }
-    }
   </script>
 </body>
 </html>

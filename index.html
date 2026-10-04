@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -402,9 +399,8 @@
 
   </div>
 
-  <!-- Audio Element (Configured to load audio.mp3) -->
+  <!-- Audio Element -->
   <audio id="audio" src="audio.mp3" loop></audio>
-  <input type="file" id="file-picker" accept="audio/*" style="display: none;" onchange="loadChosenFile(event)">
 
   <script>
     // Password Logic
@@ -414,6 +410,10 @@
       
       if (input.trim().toLowerCase() === 'love') {
         document.getElementById('password-screen').classList.add('hidden');
+        
+        // Prepare audio buffer so browsers permit playback on picture tap
+        const audio = document.getElementById('audio');
+        audio.load();
       } else {
         errorMsg.style.display = 'block';
       }
@@ -428,26 +428,14 @@
     // Audio & Vinyl Controller Logic
     const player = document.getElementById('player');
     const audio = document.getElementById('audio');
-    const filePicker = document.getElementById('file-picker');
 
     function handlePlayClick() {
-      togglePlay();
-    }
-
-    function loadChosenFile(event) {
-      const file = event.target.files[0];
-      if (file) {
-        audio.src = URL.createObjectURL(file);
-        togglePlay();
-      }
-    }
-
-    function togglePlay() {
       if (audio.paused) {
         audio.play().then(() => {
           player.classList.add('playing');
-        }).catch(() => {
-          filePicker.click();
+        }).catch((err) => {
+          console.error("Playback error:", err);
+          alert("Audio file 'audio.mp3' was not found in the project folder.");
         });
       } else {
         audio.pause();
@@ -457,3 +445,4 @@
   </script>
 </body>
 </html>
+

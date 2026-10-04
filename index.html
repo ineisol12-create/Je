@@ -210,7 +210,7 @@
       left: 0;
       z-index: 2;
       box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      background: #a2c4d9 url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80') center/cover no-repeat;
+      background: #111 url('5051570ea6c5956fef76a40b8cf956fc.jpg') center/cover no-repeat;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -400,7 +400,7 @@
   </div>
 
   <!-- Audio Element -->
-  <audio id="audio" loop></audio>
+  <audio id="audio" src="audio.mp3" loop></audio>
   <input type="file" id="file-picker" accept="audio/*" style="display: none;" onchange="loadChosenFile(event)">
 
   <script>
@@ -427,29 +427,8 @@
     const audio = document.getElementById('audio');
     const filePicker = document.getElementById('file-picker');
 
-    // Auto-search repository audio files
-    async function initAudio() {
-      try {
-        const res = await fetch('./');
-        const text = await res.text();
-        const match = text.match(/href="([^"]+\.(mp3|wav|m4a|ogg|aac|flac))"/i);
-        if (match && match[1]) {
-          audio.src = match[1];
-        }
-      } catch (e) {
-        console.log("Auto lookup waiting for user input");
-      }
-    }
-
-    initAudio();
-
     function handlePlayClick() {
-      if (!audio.src || audio.src === window.location.href) {
-        // If no file loaded yet, prompt user to select their audio file
-        filePicker.click();
-      } else {
-        togglePlay();
-      }
+      togglePlay();
     }
 
     function loadChosenFile(event) {
@@ -475,4 +454,5 @@
   </script>
 </body>
 </html>
+
 

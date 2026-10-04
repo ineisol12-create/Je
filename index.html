@@ -393,14 +393,17 @@
       <div class="subtitle-script">You, <span>BABY.</span></div>
       
       <p class="poem-text">
-        You were always a class apart among so many people, I was always so unaware yet transparent, longing to start my day with you like warm bread, turning your everyday moments into "forever"
+        You were always a class apart among so many people, I was always so unaware yet transparent, longing to start my day with you like warm bread, turning your everyday moments into "forever".
       </p>
     </div>
 
   </div>
 
   <!-- Audio Element -->
-  <audio id="audio" src="audio.mp3" loop></audio>
+  <audio id="audio" preload="auto" loop>
+    <source src="audio.mp3" type="audio/mpeg">
+    <source src="audio.mp3" type="audio/mp3">
+  </audio>
 
   <script>
     // Password Logic
@@ -411,7 +414,7 @@
       if (input.trim().toLowerCase() === 'love') {
         document.getElementById('password-screen').classList.add('hidden');
         
-        // Prepare audio buffer so browsers permit playback on picture tap
+        // Unlock browser audio permissions upon unlocking
         const audio = document.getElementById('audio');
         audio.load();
       } else {
@@ -431,11 +434,9 @@
 
     function handlePlayClick() {
       if (audio.paused) {
-        audio.play().then(() => {
-          player.classList.add('playing');
-        }).catch((err) => {
-          console.error("Playback error:", err);
-          alert("Audio file 'audio.mp3' was not found in the project folder.");
+        player.classList.add('playing');
+        audio.play().catch(function(error) {
+          console.log("Audio playback failed:", error);
         });
       } else {
         audio.pause();
